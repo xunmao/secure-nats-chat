@@ -13,17 +13,16 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"runtime"
 
 	"github.com/nats-io/nats.go"
 )
 
 const (
-	AppName       = "secure-nats-chat"
-	Version       = "0.4"
-	Proto         = "1"
-	ServerName    = "demo.nats.io"
-	SecureNatsUrl = "tls://demo.nats.io:4443"
+	appName       = "secure-nats-chat"
+	version       = "0.4"
+	proto         = "1"
+	serverName    = "demo.nats.io"
+	secureNatsURL = "tls://demo.nats.io:4443"
 )
 
 func usage() {
@@ -55,7 +54,7 @@ func main() {
 	}
 
 	subj, key = args[0], args[1]
-	subj = fmt.Sprintf("snats.%s.%s", Proto, subj)
+	subj = fmt.Sprintf("snats.%s.%s", proto, subj)
 
 	h := sha256.New()
 	h.Write([]byte(key))
@@ -78,12 +77,12 @@ func main() {
 	nonce = h.Sum(nil)
 
 	// Connect securely to NATS
-	nc, err := nats.Connect(SecureNatsUrl, nats.Name(AppName))
+	nc, err := nats.Connect(secureNatsURL, nats.Name(appName))
 	if err != nil {
 		log.Fatalf("Got an error on Connect with Secure Options: %+v\n", err)
 	}
 
-	log.Printf("Securely connected to %s", SecureNatsUrl)
+	log.Printf("Securely connected to %s", secureNatsURL)
 	ec, _ := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 
 	// Setup signal handlers to signal leaving.
@@ -127,8 +126,6 @@ func main() {
 		msg, _ := reader.ReadString('\n')
 		ec.Publish(subj, chat{Name: name, Msg: encrypt(msg)})
 	}
-
-	runtime.Goexit()
 }
 
 func encrypt(msg string) string {
