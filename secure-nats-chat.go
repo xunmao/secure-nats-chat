@@ -15,7 +15,7 @@ import (
 	"os/signal"
 	"runtime"
 
-	"github.com/nats-io/nats"
+	"github.com/nats-io/nats.go"
 )
 
 const (
