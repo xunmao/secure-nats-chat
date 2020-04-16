@@ -13,6 +13,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 
 	"github.com/nats-io/nats.go"
 )
@@ -124,6 +125,10 @@ func main() {
 	for {
 		fmt.Printf("[%s] ", name)
 		msg, _ := reader.ReadString('\n')
+		// Don't send any space.
+		if strings.TrimSpace(msg) == "" {
+			continue
+		}
 		ec.Publish(subj, chat{Name: name, Msg: encrypt(msg)})
 	}
 }
